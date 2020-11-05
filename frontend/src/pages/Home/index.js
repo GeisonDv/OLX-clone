@@ -1,13 +1,90 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { SearchArea, PageArea } from './styled';
+import useApi from '../../helpers/OlxApi';
 
-const Page = () => {
+
+import { PageContainer } from '../../components/MainComponents';
+import AdItem from '../../components/partials/AdItem';
+
+const Page = ()  => {
+    const api = useApi();
+
+    const [stateList, setStateList] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [adList, setAdList] = useState([]);
+
+    useEffect(() => {
+        const getStates = async () => {
+            const slist = await api.getStates();
+            setStateList(slist);
+        }
+        getStates();
+    }, []);
+
+    useEffect(() => {
+        const getRecentAds = async () => {
+            const json = await api.getAds({
+                sort:'desc',
+                limit: 8
+            });
+            setAdList(json.ads);
+        }
+        getRecentAds();
+    }, []);
+
+    useEffect(() => {
+        const getCategories = async () => {
+            const cats = await api.getCategories();
+            setCategories(cats);
+        }
+        getCategories();
+    }, []);
+
     return (
-        <div>
-            <h1>Pagina Inicial</h1>
+        <>
+            <SearchArea>
+                <PageContainer>
+                    <div className="searchBox">
+                        <form method="GET" action="/ads">
+                            <input type="text" name="q" placeholder="o que você procura?"/>
+                            <select name="state">
+                                {stateList.map((i, k) =>
+                                        <option key={k} value={i.name}>{i.name}</option>
+                                    )}
+                            </select>
+                            <button>Pesquisar</button>
+                        </form>
+                    </div>
+                    <div className="categoryList">
+                        {categories.map((i, k) =>
+                            <Link key={k} to={`/ads?cat=${i.slug}`} className="categoryItem">
+                                <img src={i.img} alt="" />
+                                <span>{i.name}</span>
+                            </Link>
+                        )}
+                    </div>
+                </PageContainer>
+            </SearchArea>
 
-            < Link to="/about">Sobre</Link>
-        </div>
+            <PageContainer>
+                <PageArea>
+                    <h2>Anúncios Recentes</h2>
+                    <div className="list">
+                        {adList.map((i, k) => 
+                            <AdItem key={k} data={i} />
+                        )}
+                    </div>
+                    <Link to="/ads" className="seeAllLink">Ver todos</Link>
+
+                    <hr/>
+
+
+                     Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nisi eos illo fugiat recusandae? Modi atque ut a distinctio fuga harum et, dolores necessitatibus, assumenda autem blanditiis! Non odit nihil ipsam.   
+                </PageArea>
+            </PageContainer>
+        </>
+
     );
 }
 

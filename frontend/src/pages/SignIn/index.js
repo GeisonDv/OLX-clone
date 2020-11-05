@@ -17,6 +17,7 @@ const Page = ()  => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setDisabled(true);
+        setError('');
 
         const json = await api.login(email, password);
 
@@ -24,7 +25,7 @@ const Page = ()  => {
             setError(json.error);
         } else {
             doLogin(json.token, rememberPassword);
-            window.location.ref = '/';
+            window.location.href = '/';
         }
 
         setDisabled(false);
