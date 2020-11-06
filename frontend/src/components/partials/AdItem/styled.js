@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export const Item = styled.div`
 
     a {
-        display: bloack;
+        display: block;
         border: 1px solid #FFF;
         margin: 10px;
         text-decoration: none;
